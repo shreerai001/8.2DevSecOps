@@ -84,13 +84,29 @@ pipeline {
         stage('SonarCloud Analysis') {
             steps {
                 sh '''
-                  /home/shree/.sonar/sonar-scanner-7.2.0.5079-linux-x64/bin/sonar-scanner \
+                  /opt/sonar-scanner/bin/sonar-scanner \
                     -Dsonar.organization=shrikrishnarai \
                     -Dsonar.projectKey=shreerai001_8.2DevSecOps \
                     -Dsonar.host.url=https://sonarcloud.io \
-                    -Dsonar.login=$SONAR_TOKEN
+                    -Dsonar.login=$SONAR_TOKEN \
+                    -Dsonar.sources=. \
+                    -Dsonar.exclusions=node_modules/**,test/** \
+                    -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
+                    -Dsonar.projectName="NodeJS Goof Vulnerable App" \
+                    -Dsonar.sourceEncoding=UTF-8
                 '''
             }
         }
     }
+        post {
+            always {
+                echo 'Pipeline finished.'
+            }
+            success {
+                echo 'SonarCloud analysis completed successfully!'
+            }
+            failure {
+                echo 'Pipeline failed. Check logs.'
+            }
+        }
 }
